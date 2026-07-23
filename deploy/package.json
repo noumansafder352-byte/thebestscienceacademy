@@ -1,0 +1,9 @@
+{
+  "name": "science-academy-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runtime package for the Science Academy Nitro server on cPanel. All server dependencies are already bundled by the build, so no dependencies are listed here.",
+  "scripts": {
+    "start": "node server/index.mjs"
+  }
+}

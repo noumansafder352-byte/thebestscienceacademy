@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Build a self-contained Node.js server at .output/server/index.mjs so the app
+  // can run under cPanel "Setup Node.js App" (Passenger). Override with the
+  // NITRO_PRESET env var if deploying elsewhere. This is ignored inside the
+  // Lovable sandbox, which always targets Cloudflare.
+  nitro: { preset: process.env.NITRO_PRESET ?? "node-server" },
 });

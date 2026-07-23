@@ -9,65 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SubjectsRouteImport } from './routes/subjects'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ProgramsRouteImport } from './routes/programs'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BecomeATutorRouteImport } from './routes/become-a-tutor'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TutorsIndexRouteImport } from './routes/tutors.index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BecomeATutorRouteImport } from './routes/become-a-tutor'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProgramsRouteImport } from './routes/programs'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SubjectsRouteImport } from './routes/subjects'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as TutorsSlugRouteImport } from './routes/tutors.$slug'
-import { Route as AdminTutorsRouteImport } from './routes/admin.tutors'
-import { Route as AdminStudentsRouteImport } from './routes/admin.students'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminStudentsRouteImport } from './routes/admin.students'
+import { Route as AdminTutorsRouteImport } from './routes/admin.tutors'
+import { Route as TutorsIndexRouteImport } from './routes/tutors.index'
+import { Route as TutorsSlugRouteImport } from './routes/tutors.$slug'
 import { Route as AdminTutorsIdEditRouteImport } from './routes/admin.tutors.$id.edit'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SubjectsRoute = SubjectsRouteImport.update({
-  id: '/subjects',
-  path: '/subjects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramsRoute = ProgramsRouteImport.update({
-  id: '/programs',
-  path: '/programs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BecomeATutorRoute = BecomeATutorRouteImport.update({
-  id: '/become-a-tutor',
-  path: '/become-a-tutor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -75,14 +40,44 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TutorsIndexRoute = TutorsIndexRouteImport.update({
-  id: '/tutors/',
-  path: '/tutors/',
+const BecomeATutorRoute = BecomeATutorRouteImport.update({
+  id: '/become-a-tutor',
+  path: '/become-a-tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubjectsRoute = SubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -90,29 +85,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const TutorsSlugRoute = TutorsSlugRouteImport.update({
-  id: '/tutors/$slug',
-  path: '/tutors/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTutorsRoute = AdminTutorsRouteImport.update({
-  id: '/tutors',
-  path: '/tutors',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminStudentsRoute = AdminStudentsRouteImport.update({
-  id: '/students',
-  path: '/students',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMessagesRoute = AdminMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -120,10 +95,35 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
-  id: '/applications',
-  path: '/applications',
+const AdminMessagesRoute = AdminMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTutorsRoute = AdminTutorsRouteImport.update({
+  id: '/tutors',
+  path: '/tutors',
+  getParentRoute: () => AdminRoute,
+} as any)
+const TutorsIndexRoute = TutorsIndexRouteImport.update({
+  id: '/tutors/',
+  path: '/tutors/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TutorsSlugRoute = TutorsSlugRouteImport.update({
+  id: '/tutors/$slug',
+  path: '/tutors/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTutorsIdEditRoute = AdminTutorsIdEditRouteImport.update({
   id: '/$id/edit',
@@ -282,60 +282,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/subjects': {
-      id: '/subjects'
-      path: '/subjects'
-      fullPath: '/subjects'
-      preLoaderRoute: typeof SubjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programs': {
-      id: '/programs'
-      path: '/programs'
-      fullPath: '/programs'
-      preLoaderRoute: typeof ProgramsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/become-a-tutor': {
-      id: '/become-a-tutor'
-      path: '/become-a-tutor'
-      fullPath: '/become-a-tutor'
-      preLoaderRoute: typeof BecomeATutorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -345,18 +296,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tutors/': {
-      id: '/tutors/'
-      path: '/tutors'
-      fullPath: '/tutors/'
-      preLoaderRoute: typeof TutorsIndexRouteImport
+    '/become-a-tutor': {
+      id: '/become-a-tutor'
+      path: '/become-a-tutor'
+      fullPath: '/become-a-tutor'
+      preLoaderRoute: typeof BecomeATutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subjects': {
+      id: '/subjects'
+      path: '/subjects'
+      fullPath: '/subjects'
+      preLoaderRoute: typeof SubjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -366,39 +359,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/tutors/$slug': {
-      id: '/tutors/$slug'
-      path: '/tutors/$slug'
-      fullPath: '/tutors/$slug'
-      preLoaderRoute: typeof TutorsSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/tutors': {
-      id: '/admin/tutors'
-      path: '/tutors'
-      fullPath: '/admin/tutors'
-      preLoaderRoute: typeof AdminTutorsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/students': {
-      id: '/admin/students'
-      path: '/students'
-      fullPath: '/admin/students'
-      preLoaderRoute: typeof AdminStudentsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/messages': {
-      id: '/admin/messages'
-      path: '/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AdminMessagesRouteImport
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/login': {
@@ -408,12 +373,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/applications': {
-      id: '/admin/applications'
-      path: '/applications'
-      fullPath: '/admin/applications'
-      preLoaderRoute: typeof AdminApplicationsRouteImport
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tutors': {
+      id: '/admin/tutors'
+      path: '/tutors'
+      fullPath: '/admin/tutors'
+      preLoaderRoute: typeof AdminTutorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/tutors/': {
+      id: '/tutors/'
+      path: '/tutors'
+      fullPath: '/tutors/'
+      preLoaderRoute: typeof TutorsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tutors/$slug': {
+      id: '/tutors/$slug'
+      path: '/tutors/$slug'
+      fullPath: '/tutors/$slug'
+      preLoaderRoute: typeof TutorsSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/tutors/$id/edit': {
       id: '/admin/tutors/$id/edit'
@@ -476,3 +476,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
