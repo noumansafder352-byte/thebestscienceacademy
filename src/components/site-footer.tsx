@@ -41,7 +41,7 @@ export function SiteFooter() {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-start">
               <img
-                src={footerLogo.url}
+                src="/image/The-Best-Science-Academy-White-Theme.png"
                 alt="The Best Science Academy"
                 className="h-12 sm:h-16 md:h-20 w-auto object-contain"
               />

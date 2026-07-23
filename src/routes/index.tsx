@@ -25,16 +25,28 @@ import lrnLogo from "@/assets/boards/lrn.png.asset.json";
 import ibLogo from "@/assets/boards/ib.png.asset.json";
 import fbiseLogo from "@/assets/boards/fbise.png.asset.json";
 
-const curriculumLogoMap: Record<string, { url: string }> = {
-  IGCSE: igcseLogo,
-  OALEVEL: oalevelsLogo,
-  OLEVEL: oalevelsLogo,
-  ALEVEL: oalevelsLogo,
-  IB: ibLogo,
-  AQA: aqaLogo,
-  EDEXCEL: edexcelLogo,
-  LRN: lrnLogo,
-  FBISE: fbiseLogo,
+// const curriculumLogoMap: Record<string, { url: string }> = {
+//   IGCSE: igcseLogo,
+//   OALEVEL: oalevelsLogo,
+//   OLEVEL: oalevelsLogo,
+//   ALEVEL: oalevelsLogo,
+//   IB: ibLogo,
+//   AQA: aqaLogo,
+//   EDEXCEL: edexcelLogo,
+//   LRN: lrnLogo,
+//   FBISE: fbiseLogo,
+// };
+
+const curriculumLogoMap: Record<string, string> = {
+  IGCSE: "/image/igcse.png",
+  OALEVEL: "/image/oalevels.png",
+  OLEVEL: "/image/oalevels.png",
+  ALEVEL: "/image/oalevels.png",
+  IB: "/image/ib.png",
+  AQA: "/image/aqa.png",
+  EDEXCEL: "/image/edexcel.png",
+  LRN: "/image/lrn.png",
+  FBISE: "/image/fbise.png",
 };
 
 // Home page curriculums merge O Level & A Level into a single card
@@ -208,13 +220,13 @@ function Hero() {
 /* --------------------------- TRUST BAR --------------------------- */
 function TrustBar() {
   const boards = [
-    { src: igcseLogo.url, alt: "Cambridge IGCSE", className: "h-16 md:h-20" },
-    { src: oalevelsLogo.url, alt: "O & A Level Resources", className: "h-14 md:h-16" },
-    { src: aqaLogo.url, alt: "AQA", className: "h-12 md:h-14" },
-    { src: edexcelLogo.url, alt: "Edexcel", className: "h-12 md:h-14" },
-    { src: lrnLogo.url, alt: "Learning Resource Network", className: "h-12 md:h-14" },
-    { src: ibLogo.url, alt: "International Baccalaureate", className: "h-16 md:h-20" },
-    { src: fbiseLogo.url, alt: "Federal Board of Intermediate and Secondary Education", className: "h-16 md:h-20" },
+    { src: "/image/igcse.png", alt: "Cambridge IGCSE", className: "h-16 md:h-20" },
+    { src: "/image/oalevels.png", alt: "O & A Level Resources", className: "h-14 md:h-16" },
+    { src: "/image/aqa.png", alt: "AQA", className: "h-12 md:h-14" },
+    { src: "/image/edexcel.png", alt: "Edexcel", className: "h-12 md:h-14" },
+    { src: "/image/lrn.png", alt: "Learning Resource Network", className: "h-12 md:h-14" },
+    { src: "/image/ib.png", alt: "International Baccalaureate", className: "h-16 md:h-20" },
+    { src: "/image/fbise.png", alt: "Federal Board of Intermediate and Secondary Education", className: "h-16 md:h-20" },
   ];
   // duplicate for seamless infinite loop
   const loop = [...boards, ...boards];
@@ -331,8 +343,13 @@ function Curriculums() {
               style={{ animationDelay: `${i * 70}ms` }}
             >
                 <div className="relative flex items-start justify-between">
-                  <img
+                  {/* <img
                     src={curriculumLogoMap[c.code]?.url}
+                    alt={`${c.name} logo`}
+                    className="h-16 w-auto max-w-[120px] object-contain"
+                  /> */}
+                  <img
+                    src={curriculumLogoMap[c.code]}
                     alt={`${c.name} logo`}
                     className="h-16 w-auto max-w-[120px] object-contain"
                   />

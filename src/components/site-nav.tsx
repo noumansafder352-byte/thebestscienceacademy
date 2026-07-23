@@ -42,7 +42,7 @@ export function SiteNav() {
               {/* Logo */}
               <Link to="/" className="relative flex items-center ring-focus rounded-full group px-2 py-1">
                 <img
-                  src={logo.url}
+                  src="/image/Final-logo.png"
                   alt="The Best Science Academy"
                   className={`w-auto object-contain transition-all duration-500 ${
                     scrolled ? "h-12 md:h-14" : "h-14 md:h-16"
