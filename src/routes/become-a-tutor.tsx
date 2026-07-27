@@ -44,8 +44,8 @@ const gradeLevelOptions = ["Primary", "Middle School", "High School", "College",
 
 const curriculumGroups: Record<string, string[]> = {
   "International": ["IGCSE", "GCSE", "O Level", "A Level", "IB", "AP", "AQA", "Edexcel", "LRN"],
-  "Middle East": ["UAE", "Saudi Arabia", "Qatar", "Bahrain", "Kuwait"],
-  "Asia": ["FBISE (Federal Board)", "Punjab Board", "CBSE", "ICSE", "Singapore"],
+  // "Middle East": ["UAE", "Saudi Arabia", "Qatar", "Bahrain", "Kuwait"],
+  "Asia": ["FBISE (Federal Board)", "Punjab Board", "CBSE", "ICSE"],
 };
 
 

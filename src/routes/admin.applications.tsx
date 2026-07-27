@@ -2,7 +2,23 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Download, Mail, MailWarning, MessageCircle, Phone, RotateCcw, Send, Trash2, X, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Download,
+  FileText,
+  Inbox,
+  Mail,
+  MailWarning,
+  MessageCircle,
+  Phone,
+  RotateCcw,
+  Send,
+  Trash2,
+  X,
+  XCircle,
+} from "lucide-react";
 import {
   adminListApplications,
   adminGetApplication,
@@ -15,6 +31,14 @@ import {
   REJECTION_REASON_OPTIONS,
 } from "@/lib/tutor-api.functions";
 import { StatusBadge } from "./admin.index";
+import {
+  AdminAvatar,
+  AdminPageHeader,
+  EmptyState,
+  StatTile,
+  tableHeadRow,
+  tableRow,
+} from "@/components/admin-ui";
 
 export const Route = createFileRoute("/admin/applications")({
   component: ApplicationsAdmin,
@@ -34,33 +58,49 @@ function ApplicationsAdmin() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="heading-md">Tutor applications</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Review, approve or reject incoming tutor applications.</p>
-      </div>
+      <AdminPageHeader
+        icon={FileText}
+        title="Tutor applications"
+        subtitle="Review, approve or reject incoming tutor applications."
+      />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Pending", value: counts.pending },
-          { label: "Approved", value: counts.approved },
-          { label: "Rejected", value: counts.rejected },
-          { label: "Removed", value: counts.removed },
-        ].map((s) => (
-          <div key={s.label} className="card-surface p-5">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{s.label}</div>
-            <div className="mt-1 font-[var(--font-display)] text-2xl font-bold text-ink">{s.value}</div>
-          </div>
-        ))}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile
+          icon={Clock}
+          label="Pending"
+          value={apps ? counts.pending : "—"}
+          accent="bg-amber-100 text-amber-700"
+          hint="Awaiting review"
+        />
+        <StatTile
+          icon={CheckCircle2}
+          label="Approved"
+          value={apps ? counts.approved : "—"}
+          accent="bg-emerald-100 text-emerald-700"
+          hint="Published tutors"
+        />
+        <StatTile
+          icon={XCircle}
+          label="Rejected"
+          value={apps ? counts.rejected : "—"}
+          accent="bg-rose-100 text-rose-700"
+          hint="Not proceeding"
+        />
+        <StatTile
+          icon={Trash2}
+          label="Removed"
+          value={apps ? counts.removed : "—"}
+          accent="bg-slate-200 text-slate-700"
+          hint="Kept for history"
+        />
       </div>
-
 
       <div className="card-surface p-5">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground border-b border-border">
+              <tr className={tableHeadRow}>
                 <th className="py-3 pr-3 font-semibold">Applicant</th>
-                <th className="py-3 pr-3 font-semibold">Title</th>
                 <th className="py-3 pr-3 font-semibold">Subjects</th>
                 <th className="py-3 pr-3 font-semibold">Experience</th>
                 <th className="py-3 pr-3 font-semibold">Submitted</th>
@@ -70,20 +110,50 @@ function ApplicationsAdmin() {
             </thead>
             <tbody>
               {(apps ?? []).map((a: any) => (
-                <tr key={a.id} className="border-b border-border hover:bg-surface-2">
-                  <td className="py-3 pr-3 font-medium text-ink">{a.full_name}</td>
-                  <td className="py-3 pr-3 text-muted-foreground truncate max-w-[220px]">{a.professional_title}</td>
-                  <td className="py-3 pr-3 text-muted-foreground truncate max-w-[200px]">{(a.subjects ?? []).slice(0, 2).join(", ")}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{a.experience_years}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</td>
-                  <td className="py-3 pr-3"><StatusBadge status={a.status} /></td>
+                <tr key={a.id} className={tableRow}>
+                  <td className="py-3 pr-3">
+                    <div className="flex items-center gap-3">
+                      <AdminAvatar name={a.full_name} />
+                      <div className="min-w-0">
+                        <div className="truncate font-semibold text-ink">{a.full_name}</div>
+                        <div className="max-w-50 truncate text-xs text-muted-foreground">
+                          {a.professional_title}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="max-w-50 truncate py-3 pr-3 text-muted-foreground">
+                    {(a.subjects ?? []).slice(0, 2).join(", ")}
+                  </td>
+                  <td className="whitespace-nowrap py-3 pr-3 text-muted-foreground">
+                    {a.experience_years}
+                  </td>
+                  <td className="whitespace-nowrap py-3 pr-3 text-muted-foreground">
+                    {new Date(a.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="py-3 pr-3">
+                    <StatusBadge status={a.status} />
+                  </td>
                   <td className="py-3 pr-3 text-right">
-                    <button onClick={() => setOpenId(a.id)} className="text-primary font-semibold text-xs">Review →</button>
+                    <button
+                      onClick={() => setOpenId(a.id)}
+                      className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    >
+                      Review
+                    </button>
                   </td>
                 </tr>
               ))}
               {apps && apps.length === 0 && (
-                <tr><td colSpan={7} className="py-14 text-center text-muted-foreground">No applications yet.</td></tr>
+                <tr>
+                  <td colSpan={6}>
+                    <EmptyState
+                      icon={Inbox}
+                      title="No applications yet"
+                      hint="New tutor applications will show up here."
+                    />
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -104,7 +174,10 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
   const deleteFn = useServerFn(adminDeleteApplication);
   const notesFn = useServerFn(adminUpdateApplicationNotes);
   const qc = useQueryClient();
-  const { data: app, isLoading } = useQuery({ queryKey: ["admin-application", id], queryFn: () => getFn({ data: { id } }) });
+  const { data: app, isLoading } = useQuery({
+    queryKey: ["admin-application", id],
+    queryFn: () => getFn({ data: { id } }),
+  });
   const [notes, setNotes] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
@@ -121,12 +194,18 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
 
   const approve = useMutation({
     mutationFn: () => approveFn({ data: { id } }),
-    onSuccess: () => { invalidate(); onClose(); },
+    onSuccess: () => {
+      invalidate();
+      onClose();
+    },
   });
   const reject = useMutation({
     mutationFn: () =>
       rejectFn({ data: { id, reason: rejectReason, comments: rejectComments.trim() || null } }),
-    onSuccess: () => { invalidate(); setRejectOpen(false); },
+    onSuccess: () => {
+      invalidate();
+      setRejectOpen(false);
+    },
   });
   const resend = useMutation({
     mutationFn: () => resendFn({ data: { id } }),
@@ -138,7 +217,11 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
   });
   const remove = useMutation({
     mutationFn: () => deleteFn({ data: { id } }),
-    onSuccess: () => { invalidate(); setConfirmDelete(false); onClose(); },
+    onSuccess: () => {
+      invalidate();
+      setConfirmDelete(false);
+      onClose();
+    },
   });
   const saveNotes = useMutation({
     mutationFn: () => notesFn({ data: { id, admin_notes: notes } }),
@@ -148,10 +231,18 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
   return (
     <div className="fixed inset-0 z-50 flex" onClick={onClose}>
       <div className="flex-1 bg-black/40" />
-      <div className="w-full max-w-2xl bg-surface h-full overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="w-full max-w-2xl bg-surface h-full overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between">
           <h2 className="heading-md">Application details</h2>
-          <button onClick={onClose} className="h-9 w-9 rounded-full hover:bg-surface-2 flex items-center justify-center"><X className="h-4 w-4" /></button>
+          <button
+            onClick={onClose}
+            className="h-9 w-9 rounded-full hover:bg-surface-2 flex items-center justify-center"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {isLoading || !app ? (
@@ -160,17 +251,27 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
           <div className="p-6 space-y-6">
             <div className="flex items-start gap-4">
               {app.photo_url ? (
-                <img src={app.photo_url} alt={app.full_name} className="h-20 w-20 rounded-xl object-cover" />
+                <img
+                  src={app.photo_url}
+                  alt={app.full_name}
+                  className="h-20 w-20 rounded-xl object-cover"
+                />
               ) : (
                 <div className="h-20 w-20 rounded-xl bg-primary-soft text-primary flex items-center justify-center text-2xl font-bold">
                   {app.full_name?.[0]}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">{app.full_name}</h3>
+                <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">
+                  {app.full_name}
+                </h3>
                 <p className="text-sm text-primary font-semibold">{app.professional_title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{app.city}, {app.country} · {app.nationality}</p>
-                <div className="mt-2"><StatusBadge status={app.status} /></div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {app.city}, {app.country} · {app.nationality}
+                </p>
+                <div className="mt-2">
+                  <StatusBadge status={app.status} />
+                </div>
               </div>
             </div>
 
@@ -193,44 +294,67 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
 
             {app.bio && (
               <Section title="Bio">
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{app.bio}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {app.bio}
+                </p>
               </Section>
             )}
 
             {app.methodology && (
               <Section title="Methodology">
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{app.methodology}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {app.methodology}
+                </p>
               </Section>
             )}
 
             <Section title="CV / Resume">
               {app.cv_url ? (
-                <a href={app.cv_url} target="_blank" rel="noreferrer" className="btn-ghost !py-2 text-sm">
+                <a
+                  href={app.cv_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-ghost !py-2 text-sm"
+                >
                   <Download className="h-4 w-4" /> Download CV
                 </a>
-              ) : <p className="text-sm text-muted-foreground">No CV uploaded.</p>}
+              ) : (
+                <p className="text-sm text-muted-foreground">No CV uploaded.</p>
+              )}
             </Section>
 
             <Section title="National ID / CNIC (private — admin verification only)">
-              {(app.cnic_front_url || app.cnic_back_url) ? (
+              {app.cnic_front_url || app.cnic_back_url ? (
                 <div className="grid sm:grid-cols-2 gap-3">
                   {(["front", "back"] as const).map((side) => {
                     const url = side === "front" ? app.cnic_front_url : app.cnic_back_url;
                     const label = side === "front" ? "Front" : "Back";
                     if (!url) {
                       return (
-                        <div key={side} className="rounded-lg border border-dashed border-border p-4 text-xs text-muted-foreground">
+                        <div
+                          key={side}
+                          className="rounded-lg border border-dashed border-border p-4 text-xs text-muted-foreground"
+                        >
                           {label} not uploaded.
                         </div>
                       );
                     }
                     return (
-                      <div key={side} className="rounded-lg border border-border overflow-hidden bg-surface-2">
+                      <div
+                        key={side}
+                        className="rounded-lg border border-border overflow-hidden bg-surface-2"
+                      >
                         <a href={url} target="_blank" rel="noreferrer" className="block">
-                          <img src={url} alt={`National ID ${label}`} className="w-full h-40 object-cover" />
+                          <img
+                            src={url}
+                            alt={`National ID ${label}`}
+                            className="w-full h-40 object-cover"
+                          />
                         </a>
                         <div className="flex items-center justify-between p-2 gap-2">
-                          <span className="text-[11px] uppercase tracking-wider font-semibold text-primary">{label}</span>
+                          <span className="text-[11px] uppercase tracking-wider font-semibold text-primary">
+                            {label}
+                          </span>
                           <a
                             href={url}
                             download
@@ -253,9 +377,7 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
             {app.status === "rejected" && app.rejection_reason && (
               <Section title="Rejection details">
                 <Row label="Reason" value={app.rejection_reason} />
-                {app.rejection_comments && (
-                  <Row label="Comments" value={app.rejection_comments} />
-                )}
+                {app.rejection_comments && <Row label="Comments" value={app.rejection_comments} />}
                 <Row
                   label="Rejected at"
                   value={app.rejected_at ? new Date(app.rejected_at).toLocaleString() : "—"}
@@ -272,7 +394,6 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
               </Section>
             )}
 
-
             <Section title="Admin notes (private)">
               <textarea
                 defaultValue={app.admin_notes ?? ""}
@@ -281,27 +402,46 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
                 className="w-full px-3 py-2 rounded-lg border border-border bg-surface-2 text-sm"
                 placeholder="Notes about this applicant…"
               />
-              <button onClick={() => saveNotes.mutate()} className="mt-2 btn-ghost !py-2 text-xs">Save notes</button>
+              <button onClick={() => saveNotes.mutate()} className="mt-2 btn-ghost !py-2 text-xs">
+                Save notes
+              </button>
             </Section>
 
             <div className="sticky bottom-0 bg-surface border-t border-border py-4 flex gap-3 flex-wrap">
               {app.status === "pending" && (
                 <>
-                  <button onClick={() => approve.mutate()} disabled={approve.isPending} className="btn-primary flex-1 min-w-[140px]">
-                    <CheckCircle2 className="h-4 w-4" /> {approve.isPending ? "Approving…" : "Approve & publish"}
+                  <button
+                    onClick={() => approve.mutate()}
+                    disabled={approve.isPending}
+                    className="btn-primary flex-1 min-w-[140px]"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />{" "}
+                    {approve.isPending ? "Approving…" : "Approve & publish"}
                   </button>
-                  <button onClick={() => setRejectOpen(true)} className="btn-ghost flex-1 min-w-[120px]">
+                  <button
+                    onClick={() => setRejectOpen(true)}
+                    className="btn-ghost flex-1 min-w-[120px]"
+                  >
                     <XCircle className="h-4 w-4" /> Reject
                   </button>
                 </>
               )}
               {app.status === "rejected" && (
                 <>
-                  <button onClick={() => reopen.mutate()} disabled={reopen.isPending} className="btn-ghost flex-1 min-w-[120px]">
+                  <button
+                    onClick={() => reopen.mutate()}
+                    disabled={reopen.isPending}
+                    className="btn-ghost flex-1 min-w-[120px]"
+                  >
                     <RotateCcw className="h-4 w-4" /> {reopen.isPending ? "Reopening…" : "Reopen"}
                   </button>
-                  <button onClick={() => approve.mutate()} disabled={approve.isPending} className="btn-primary flex-1 min-w-[140px]">
-                    <CheckCircle2 className="h-4 w-4" /> {approve.isPending ? "Approving…" : "Approve now"}
+                  <button
+                    onClick={() => approve.mutate()}
+                    disabled={approve.isPending}
+                    className="btn-primary flex-1 min-w-[140px]"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />{" "}
+                    {approve.isPending ? "Approving…" : "Approve now"}
                   </button>
                   <button
                     onClick={() => setConfirmDelete(true)}
@@ -313,38 +453,57 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
               )}
               {app.status === "approved" && (
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" /> This application has been approved and published.
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" /> This application has been
+                  approved and published.
                 </div>
               )}
               {app.status === "removed" && (
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Trash2 className="h-4 w-4 text-slate-500" /> This tutor was removed. Application kept for history.
+                  <Trash2 className="h-4 w-4 text-slate-500" /> This tutor was removed. Application
+                  kept for history.
                 </div>
               )}
             </div>
 
             {confirmDelete && (
-              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" onClick={() => !remove.isPending && setConfirmDelete(false)}>
-                <div className="w-full max-w-md card-surface p-6" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+                onClick={() => !remove.isPending && setConfirmDelete(false)}
+              >
+                <div
+                  className="w-full max-w-md card-surface p-6"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex items-start gap-3">
                     <div className="h-11 w-11 shrink-0 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
                       <AlertTriangle className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">Delete application?</h3>
+                      <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">
+                        Delete application?
+                      </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        This will permanently remove the application from <span className="font-semibold text-ink">{app.full_name}</span>. This cannot be undone.
+                        This will permanently remove the application from{" "}
+                        <span className="font-semibold text-ink">{app.full_name}</span>. This cannot
+                        be undone.
                       </p>
                     </div>
                   </div>
                   <div className="mt-6 flex justify-end gap-2">
-                    <button onClick={() => setConfirmDelete(false)} disabled={remove.isPending} className="btn-ghost !py-2 text-sm">Cancel</button>
+                    <button
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={remove.isPending}
+                      className="btn-ghost !py-2 text-sm"
+                    >
+                      Cancel
+                    </button>
                     <button
                       onClick={() => remove.mutate()}
                       disabled={remove.isPending}
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
                     >
-                      <Trash2 className="h-4 w-4" /> {remove.isPending ? "Deleting…" : "Delete permanently"}
+                      <Trash2 className="h-4 w-4" />{" "}
+                      {remove.isPending ? "Deleting…" : "Delete permanently"}
                     </button>
                   </div>
                 </div>
@@ -352,16 +511,25 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
             )}
 
             {rejectOpen && (
-              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" onClick={() => !reject.isPending && setRejectOpen(false)}>
-                <div className="w-full max-w-lg card-surface p-6" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4"
+                onClick={() => !reject.isPending && setRejectOpen(false)}
+              >
+                <div
+                  className="w-full max-w-lg card-surface p-6"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex items-start gap-3">
                     <div className="h-11 w-11 shrink-0 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
                       <XCircle className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">Reject application?</h3>
+                      <h3 className="font-[var(--font-display)] font-bold text-lg text-ink">
+                        Reject application?
+                      </h3>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        <span className="font-semibold text-ink">{app.full_name}</span> will be notified by email at{" "}
+                        <span className="font-semibold text-ink">{app.full_name}</span> will be
+                        notified by email at{" "}
                         <span className="font-medium text-ink">{app.email}</span>.
                       </p>
                     </div>
@@ -369,19 +537,25 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
 
                   <div className="mt-5 space-y-4">
                     <div>
-                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Reason <span className="text-destructive">*</span></label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Reason <span className="text-destructive">*</span>
+                      </label>
                       <select
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
                         className="mt-1.5 w-full px-3 py-2 rounded-lg border border-border bg-surface-2 text-sm"
                       >
                         {REJECTION_REASON_OPTIONS.map((r) => (
-                          <option key={r} value={r}>{r}</option>
+                          <option key={r} value={r}>
+                            {r}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Additional comments (optional)</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Additional comments (optional)
+                      </label>
                       <textarea
                         value={rejectComments}
                         onChange={(e) => setRejectComments(e.target.value)}
@@ -395,18 +569,26 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
 
                   {reject.isError && (
                     <p className="mt-3 text-sm text-destructive">
-                      {(reject.error as Error)?.message ?? "Something went wrong. Please try again."}
+                      {(reject.error as Error)?.message ??
+                        "Something went wrong. Please try again."}
                     </p>
                   )}
 
                   <div className="mt-6 flex justify-end gap-2">
-                    <button onClick={() => setRejectOpen(false)} disabled={reject.isPending} className="btn-ghost !py-2 text-sm">Cancel</button>
+                    <button
+                      onClick={() => setRejectOpen(false)}
+                      disabled={reject.isPending}
+                      className="btn-ghost !py-2 text-sm"
+                    >
+                      Cancel
+                    </button>
                     <button
                       onClick={() => reject.mutate()}
                       disabled={reject.isPending}
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60"
                     >
-                      <XCircle className="h-4 w-4" /> {reject.isPending ? "Rejecting…" : "Confirm rejection & notify"}
+                      <XCircle className="h-4 w-4" />{" "}
+                      {reject.isPending ? "Rejecting…" : "Confirm rejection & notify"}
                     </button>
                   </div>
                 </div>
@@ -422,7 +604,9 @@ function ApplicationDrawer({ id, onClose }: { id: string; onClose: () => void })
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card-surface p-4">
-      <div className="text-[11px] uppercase tracking-wider font-semibold text-primary mb-3">{title}</div>
+      <div className="text-[11px] uppercase tracking-wider font-semibold text-primary mb-3">
+        {title}
+      </div>
       <div className="space-y-2">{children}</div>
     </div>
   );
@@ -456,13 +640,33 @@ function EmailStatusBanner({
   const config = (() => {
     switch (status) {
       case "sent":
-        return { tone: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: <Mail className="h-4 w-4" />, label: "Rejection email sent", detail: attempted ? `Delivered · ${attempted}` : null };
+        return {
+          tone: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          icon: <Mail className="h-4 w-4" />,
+          label: "Rejection email sent",
+          detail: attempted ? `Delivered · ${attempted}` : null,
+        };
       case "failed":
-        return { tone: "bg-destructive/10 text-destructive border-destructive/30", icon: <MailWarning className="h-4 w-4" />, label: "Email delivery failed", detail: error ?? "Unknown error" };
+        return {
+          tone: "bg-destructive/10 text-destructive border-destructive/30",
+          icon: <MailWarning className="h-4 w-4" />,
+          label: "Email delivery failed",
+          detail: error ?? "Unknown error",
+        };
       case "skipped":
-        return { tone: "bg-amber-50 text-amber-800 border-amber-200", icon: <MailWarning className="h-4 w-4" />, label: "Email not sent — sender not configured", detail: "Configure the sender domain to enable delivery. Rejection is recorded." };
+        return {
+          tone: "bg-amber-50 text-amber-800 border-amber-200",
+          icon: <MailWarning className="h-4 w-4" />,
+          label: "Email not sent — sender not configured",
+          detail: "Configure the sender domain to enable delivery. Rejection is recorded.",
+        };
       default:
-        return { tone: "bg-surface-2 text-muted-foreground border-border", icon: <Mail className="h-4 w-4" />, label: "No email attempt recorded", detail: null };
+        return {
+          tone: "bg-surface-2 text-muted-foreground border-border",
+          icon: <Mail className="h-4 w-4" />,
+          label: "No email attempt recorded",
+          detail: null,
+        };
     }
   })();
 
@@ -474,7 +678,9 @@ function EmailStatusBanner({
         <div className="mt-0.5">{config.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold">{config.label}</div>
-          {config.detail && <div className="mt-0.5 text-xs opacity-90 break-words">{config.detail}</div>}
+          {config.detail && (
+            <div className="mt-0.5 text-xs opacity-90 break-words">{config.detail}</div>
+          )}
         </div>
         {canRetry && (
           <button
