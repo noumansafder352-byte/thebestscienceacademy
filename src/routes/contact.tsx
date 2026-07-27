@@ -155,11 +155,11 @@ function ContactPage() {
           </div>
 
           <div className="space-y-5">
-            <InfoCard icon={MessageCircle} title="WhatsApp" body="+92 300 1234567" cta="Chat now" />
-            <InfoCard icon={Mail} title="Email" body="hello@thebestscienceacademy.com" cta="Send mail" />
-            <InfoCard icon={Phone} title="Phone" body="+92 21 1234 5678" cta="Call us" />
-            <InfoCard icon={MapPin} title="Office" body="Karachi, Pakistan" cta="View on map" />
-            <div className="card-surface p-6">
+            <InfoCard icon={MessageCircle} title="WhatsApp" body="+92 310 5280639" />
+            <InfoCard icon={Mail} title="Email" body="info@thebestscienceacademy.com" />
+            <InfoCard icon={Phone} title="Phone" body="+92 310 5280639" />
+            <InfoCard icon={MapPin} title="Office" body="Islamabad, Pakistan" />
+            {/* <div className="card-surface p-6">
               <div className="flex items-center gap-3">
                 <div className="h-11 w-11 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
                   <Clock className="h-5 w-5" />
@@ -171,14 +171,29 @@ function ContactPage() {
                 <dt className="text-muted-foreground">Saturday</dt><dd className="text-right text-ink">10:00 – 18:00 PKT</dd>
                 <dt className="text-muted-foreground">Sunday</dt><dd className="text-right text-ink">Closed</dd>
               </dl>
-            </div>
-            <div className="card-surface overflow-hidden">
+            </div> */}
+            {/* <div className="card-surface overflow-hidden">
               <div className="aspect-[16/10] bg-primary-soft flex items-center justify-center text-muted-foreground text-sm">
                 <div className="flex flex-col items-center gap-2">
                   <MapPin className="h-6 w-6 text-primary" />
                   Map placeholder
                 </div>
               </div>
+            </div> */}
+            <div className="card-surface overflow-hidden rounded-3xl">
+            <div className="aspect-[16/10]">
+              <iframe
+                src="https://www.google.com/maps?q=Islamabad,Pakistan&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+                title="Islamabad Map"
+              />
+            </div>
             </div>
           </div>
         </div>
@@ -202,7 +217,7 @@ function Field({ label, type = "text", placeholder, value, onChange, className =
   );
 }
 
-function InfoCard({ icon: Icon, title, body, cta }: { icon: typeof Mail; title: string; body: string; cta: string }) {
+function InfoCard({ icon: Icon, title, body }: { icon: typeof Mail; title: string; body: string }) {
   return (
     <div className="card-surface card-surface-hover p-6 flex items-start gap-4">
       <div className="h-11 w-11 rounded-xl bg-primary-soft text-primary flex items-center justify-center shrink-0">
@@ -212,9 +227,6 @@ function InfoCard({ icon: Icon, title, body, cta }: { icon: typeof Mail; title: 
         <h3 className="font-semibold text-ink">{title}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{body}</p>
       </div>
-      <button className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:gap-2 transition-all">
-        {cta} <ArrowRight className="h-3.5 w-3.5" />
-      </button>
     </div>
   );
 }

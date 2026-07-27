@@ -743,8 +743,8 @@ function BecomeATutorPage() {
               </button>
               <p className="mt-4 text-sm text-muted-foreground">
                 Prefer email? Write to{" "}
-                <a className="text-primary font-medium" href="mailto:careers@thebestscienceacademy.com">
-                  careers@thebestscienceacademy.com
+                <a className="text-primary font-medium" href="mailto:info@thebestscienceacademy.com">
+                  info@thebestscienceacademy.com
                 </a>
               </p>
             </div>
