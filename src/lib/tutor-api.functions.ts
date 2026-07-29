@@ -103,6 +103,26 @@ export const submitTutorApplication = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw error;
+
+    // Best-effort notifications — never fail the submission if email is down.
+    try {
+      const { sendNewApplicationNotification, sendApplicantConfirmation } = await import("./email.server");
+      await Promise.allSettled([
+        sendNewApplicationNotification({
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone,
+          professional_title: data.professional_title,
+          subjects: data.subjects,
+          country: data.country,
+          city: data.city,
+        }),
+        sendApplicantConfirmation({ to: data.email, applicantName: data.full_name }),
+      ]);
+    } catch (e) {
+      console.error("[submit-email]", e);
+    }
+
     return { id: row.id };
   });
 
@@ -264,7 +284,7 @@ export const adminRejectApplication = createServerFn({ method: "POST" })
       .single();
     if (fetchErr) throw fetchErr;
 
-    const { sendRejectionEmail } = await import("./rejection-email.server");
+    const { sendRejectionEmail } = await import("./email.server");
     const result = await sendRejectionEmail({
       to: app.email,
       applicantName: app.full_name,
@@ -305,7 +325,7 @@ export const adminResendRejectionEmail = createServerFn({ method: "POST" })
     if (app.status !== "rejected") throw new Error("Application is not in a rejected state");
     if (!app.rejection_reason) throw new Error("No rejection reason on file");
 
-    const { sendRejectionEmail } = await import("./rejection-email.server");
+    const { sendRejectionEmail } = await import("./email.server");
     const result = await sendRejectionEmail({
       to: app.email,
       applicantName: app.full_name,
@@ -366,7 +386,7 @@ export const adminApproveApplication = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { data: app, error: appErr } = await context.supabase
       .from("tutor_applications")
-      .select("id, full_name, photo_path")
+      .select("id, full_name, photo_path, email")
       .eq("id", data.id)
       .single();
     if (appErr) throw appErr;
@@ -394,6 +414,15 @@ export const adminApproveApplication = createServerFn({ method: "POST" })
       _photo_url: (app.photo_path ?? "") as string,
     });
     if (rpcErr) throw rpcErr;
+
+    // Best-effort welcome email — never fail the approval if email is down.
+    try {
+      const { sendApprovalEmail } = await import("./email.server");
+      await sendApprovalEmail({ to: (app as any).email, applicantName: app.full_name });
+    } catch (e) {
+      console.error("[approve-email]", e);
+    }
+
     return { tutorId, slug };
   });
 
