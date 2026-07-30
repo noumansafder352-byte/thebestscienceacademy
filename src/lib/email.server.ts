@@ -13,6 +13,7 @@
 //   EMAIL_FROM          optional display sender, e.g. "The Best Science Academy <careers@…>"
 //                       (falls back to SMTP_USER)
 //   ADMIN_NOTIFY_EMAIL  where new-application alerts are sent (falls back to EMAIL_FROM/SMTP_USER)
+//   CONTACT_NOTIFY_EMAIL where contact-form enquiries are sent (falls back to ADMIN_NOTIFY_EMAIL)
 //   SMTP_TLS_REJECT_UNAUTHORIZED  "false" to accept a mismatched/self-signed mail
 //                       certificate (common on shared cPanel hosting) — default: true
 import nodemailer, { type Transporter } from "nodemailer";
@@ -260,5 +261,43 @@ export async function sendNewApplicationNotification(applicant: {
     subject: `New tutor application — ${applicant.full_name}`,
     html: layout("New tutor application", body),
     replyTo: applicant.email,
+  });
+}
+
+export async function sendContactNotification(msg: {
+  name: string;
+  email: string;
+  phone?: string | null;
+  subject?: string | null;
+  message: string;
+}): Promise<SendResult> {
+  const to = process.env.CONTACT_NOTIFY_EMAIL || process.env.ADMIN_NOTIFY_EMAIL || fromAddress();
+  if (!to) return { status: "skipped" };
+
+  const row = (label: string, value?: string | null) =>
+    `<tr>
+       <td style="padding:6px 0;color:#64748b;font-size:13px;width:110px;vertical-align:top;">${label}</td>
+       <td style="padding:6px 0;color:#0f172a;font-size:14px;font-weight:600;">${escapeHtml(value || "—")}</td>
+     </tr>`;
+
+  const body =
+    paragraph(`You've received a new enquiry from the website contact form.`) +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 16px;">
+       ${row("Name", msg.name)}
+       ${row("Email", msg.email)}
+       ${row("Phone", msg.phone)}
+       ${row("Subject", msg.subject)}
+     </table>` +
+    `<div style="margin:8px 0 16px;padding:16px 18px;background:#f8fafc;border-left:3px solid ${BRAND};border-radius:8px;">
+       <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;font-weight:600;">Message</div>
+       <div style="margin-top:8px;font-size:14px;line-height:1.6;color:#334155;white-space:pre-line;">${escapeHtml(msg.message)}</div>
+     </div>` +
+    paragraph(`Reply directly to this email to respond to ${escapeHtml(msg.name)}.`);
+
+  return sendEmail({
+    to,
+    subject: `New enquiry — ${msg.name}`,
+    html: layout("New contact enquiry", body),
+    replyTo: msg.email,
   });
 }

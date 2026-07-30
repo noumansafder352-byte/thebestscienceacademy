@@ -87,6 +87,7 @@ applicant. Until these are set, emails are silently **skipped** (the app still w
 | `SMTP_PASS` | the mailbox password |
 | `EMAIL_FROM` | *(optional)* `The Best Science Academy <careers@thebestscienceacademy.com>` |
 | `ADMIN_NOTIFY_EMAIL` | where new-application alerts go (falls back to `EMAIL_FROM`) |
+| `CONTACT_NOTIFY_EMAIL` | where contact-form enquiries go, e.g. `info@thebestscienceacademy.com` (falls back to `ADMIN_NOTIFY_EMAIL`) |
 | `SMTP_TLS_REJECT_UNAUTHORIZED` | set to `false` if you get a *"Hostname/IP does not match certificate"* error (common on shared cPanel/Namecheap mail — the cert is for `*.web-hosting.com`, not your domain) |
 
 3. **Deliverability:** in cPanel → **Email Deliverability**, click **Repair** on your

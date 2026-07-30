@@ -164,6 +164,21 @@ export const submitContactMessage = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("contact_messages").insert(data);
     if (error) throw error;
+
+    // Best-effort notification to the team — never fail the submission on email.
+    try {
+      const { sendContactNotification } = await import("./email.server");
+      await sendContactNotification({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        subject: data.subject,
+        message: data.message,
+      });
+    } catch (e) {
+      console.error("[contact-email]", e);
+    }
+
     return { ok: true };
   });
 
