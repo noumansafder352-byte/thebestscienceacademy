@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -25,6 +25,7 @@ function TutorsAdmin() {
   const toggleFn = useServerFn(adminSetTutorActive);
   const deleteFn = useServerFn(adminDeleteTutor);
   const qc = useQueryClient();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [confirm, setConfirm] = useState<{ id: string; name: string } | null>(null);
@@ -66,6 +67,14 @@ function TutorsAdmin() {
     active: visible.filter((t: any) => t.is_active).length,
     inactive: visible.filter((t: any) => !t.is_active).length,
   };
+
+  // This route file doubles as the layout for its nested routes
+  // (e.g. /admin/tutors/$id/edit). When a child route is active, render it via
+  // the <Outlet /> instead of the tutors list — without this the URL changes
+  // but the edit page has nowhere to mount, so nothing appears.
+  if (pathname !== "/admin/tutors") {
+    return <Outlet />;
+  }
 
   return (
     <div className="space-y-6">

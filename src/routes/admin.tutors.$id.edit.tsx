@@ -2,12 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Upload } from "lucide-react";
 import {
   adminGetTutor,
   adminUpdateTutor,
 } from "@/lib/tutor-api.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tutors/$id/edit")({
   component: EditTutorPage,
@@ -36,8 +37,6 @@ function EditTutorPage() {
   const [languagesText, setLanguagesText] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (tutor && !form) {
@@ -77,9 +76,7 @@ function EditTutorPage() {
     });
 
   const onSave = async () => {
-    setError(null);
     setSaving(true);
-    setSaved(false);
     try {
       let photoPath = form.photo_url;
       if (photoFile) {
@@ -116,10 +113,14 @@ function EditTutorPage() {
         photo_url: photoPath,
       };
       await update.mutateAsync(patch);
-      setSaved(true);
       setPhotoFile(null);
+      toast.success("Changes saved", {
+        description: `${form.name || "This tutor"}'s profile has been updated.`,
+      });
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save changes.");
+      toast.error("Couldn't save changes", {
+        description: e?.message ?? "Please try again.",
+      });
     } finally {
       setSaving(false);
     }
@@ -145,17 +146,6 @@ function EditTutorPage() {
           </button>
         </div>
       </div>
-
-      {saved && (
-        <div className="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4" /> Changes saved successfully.
-        </div>
-      )}
-      {error && (
-        <div className="p-4 rounded-xl bg-destructive/10 text-destructive text-sm font-medium flex items-start gap-2">
-          <X className="h-4 w-4 mt-0.5 shrink-0" /> {error}
-        </div>
-      )}
 
       <Card title="Profile photo">
         <div className="flex items-center gap-4 flex-wrap">
