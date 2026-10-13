@@ -16,6 +16,19 @@ dist-ssr
 .nitro
 *.local
 
+# Secrets — never commit (use .env.example as the template)
+.env
+.env.*
+!.env.example
+
+# Uploaded files (tutor photos, CVs, CNIC images)
+backend/uploads/**
+!backend/uploads/*/
+!backend/uploads/*/.gitkeep
+
+# Data exports used by the Supabase migration (contain password hashes)
+backend/scripts/data/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
