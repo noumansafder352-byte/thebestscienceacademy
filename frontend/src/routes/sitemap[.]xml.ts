@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { listTutorSlugs } from "@/lib/tutor-api.functions";
 
 const BASE_URL = "";
 
@@ -15,12 +14,11 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const supabase = createClient<Database>(
-          process.env.SUPABASE_URL!,
-          process.env.SUPABASE_PUBLISHABLE_KEY!,
-          { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-        );
-        const { data: tutors } = await supabase.from("tutors").select("slug").eq("is_active", true);
+        // If the API is unreachable, still serve the static pages.
+        const tutors = await listTutorSlugs().catch((err) => {
+          console.error("[sitemap] could not load tutor slugs:", err);
+          return [];
+        });
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/about", changefreq: "monthly", priority: "0.8" },

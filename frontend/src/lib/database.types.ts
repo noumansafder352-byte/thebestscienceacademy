@@ -1,3 +1,5 @@
+// Row types for the MySQL tables (originally generated from the Supabase schema;
+// the MySQL schema in backend/sql/schema.sql has the same columns).
 export type Json =
   | string
   | number

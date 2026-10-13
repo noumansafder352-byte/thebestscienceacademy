@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, GraduationCap, FileText, Mail, Settings, Bell, Search, ChevronDown, LogOut, Menu, X,
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth, useAuthActions } from "@/hooks/use-auth";
 import { getIsAdmin } from "@/lib/tutor-api.functions";
 
 export const Route = createFileRoute("/admin")({
@@ -33,6 +32,7 @@ function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { signOut } = useAuthActions();
   const isLoginRoute = pathname === "/admin/login";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -74,7 +74,7 @@ function AdminLayout() {
           <button
             className="btn-ghost mt-6"
             onClick={async () => {
-              await supabase.auth.signOut();
+              await signOut();
               navigate({ to: "/admin/login" });
             }}
           >
@@ -119,7 +119,7 @@ function AdminLayout() {
         <button
           onClick={async () => {
             onNavigate?.();
-            await supabase.auth.signOut();
+            await signOut();
             navigate({ to: "/admin/login" });
           }}
           className="inline-flex items-center gap-1.5 hover:text-gold"

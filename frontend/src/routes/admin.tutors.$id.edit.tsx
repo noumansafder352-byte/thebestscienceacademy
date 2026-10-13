@@ -6,8 +6,8 @@ import { ArrowLeft, Save, Upload } from "lucide-react";
 import {
   adminGetTutor,
   adminUpdateTutor,
+  adminUploadTutorPhoto,
 } from "@/lib/tutor-api.functions";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/tutors/$id/edit")({
@@ -82,10 +82,8 @@ function EditTutorPage() {
       if (photoFile) {
         if (photoFile.size > 5 * 1024 * 1024) throw new Error("Photo must be under 5MB.");
         if (!/^image\/(jpeg|jpg|png|webp)$/.test(photoFile.type)) throw new Error("Photo must be JPG, PNG, or WebP.");
-        const path = `tutors/${id}-${Date.now()}-${photoFile.name.replace(/[^a-zA-Z0-9._-]+/g, "-")}`;
-        const up = await supabase.storage.from("tutor-photos").upload(path, photoFile, { upsert: false });
-        if (up.error) throw up.error;
-        photoPath = path;
+        const up = await adminUploadTutorPhoto({ data: { id, file: photoFile } });
+        photoPath = up.path;
       }
       const patch: any = {
         name: form.name,

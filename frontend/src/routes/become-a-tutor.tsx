@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { SiteLayout } from "@/components/layout";
 import { PageHeader } from "@/components/page-header";
-import { supabase } from "@/integrations/supabase/client";
 import { submitTutorApplication } from "@/lib/tutor-api.functions";
 import { PhoneField, isValidPhoneNumber } from "@/components/phone-field";
 
@@ -268,24 +267,7 @@ function BecomeATutorPage() {
 
     setBusy(true);
     try {
-      const stamp = Date.now();
-      const photoPath = `applications/${stamp}-${sanitizeName(photoFile.name)}`;
-      const cvPath = `applications/${stamp}-${sanitizeName(cvFile.name)}`;
-      const cnicFrontPath = cnicFrontFile ? `applications/cnic/${stamp}-front-${sanitizeName(cnicFrontFile.name)}` : "";
-      const cnicBackPath = cnicBackFile ? `applications/cnic/${stamp}-back-${sanitizeName(cnicBackFile.name)}` : "";
-      const photoUp = await supabase.storage.from("tutor-photos").upload(photoPath, photoFile, { upsert: false });
-      if (photoUp.error) throw photoUp.error;
-      const cvUp = await supabase.storage.from("tutor-cvs").upload(cvPath, cvFile, { upsert: false });
-      if (cvUp.error) throw cvUp.error;
-      if (cnicFrontFile) {
-        const up = await supabase.storage.from("tutor-cvs").upload(cnicFrontPath, cnicFrontFile, { upsert: false });
-        if (up.error) throw up.error;
-      }
-      if (cnicBackFile) {
-        const up = await supabase.storage.from("tutor-cvs").upload(cnicBackPath, cnicBackFile, { upsert: false });
-        if (up.error) throw up.error;
-      }
-
+      // The form fields and all files go to the server in one request.
       await submitFn({
         data: {
           full_name: formData.fullName,
@@ -314,11 +296,8 @@ function BecomeATutorPage() {
             year: formData.graduationYear,
           }],
           schedule: [],
-          photo_path: photoPath,
-          cv_path: cvPath,
-          cnic_front_path: cnicFrontPath,
-          cnic_back_path: cnicBackPath,
         },
+        files: { photo: photoFile, cv: cvFile, cnic_front: cnicFrontFile, cnic_back: cnicBackFile },
       });
       // Success — reset & show modal, do not scroll
       resetAll();
@@ -329,10 +308,6 @@ function BecomeATutorPage() {
       setBusy(false);
     }
   };
-
-  function sanitizeName(n: string) {
-    return n.replace(/[^a-zA-Z0-9._-]+/g, "-");
-  }
 
 
   const chipError = (key: string) => (submitted && errors[key] ? errors[key] : undefined);
