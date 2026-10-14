@@ -55,49 +55,30 @@ cPanel → **Setup Node.js App** → **Create Application**:
 | Application URL | your domain or subdomain |
 | Application startup file | `app.cjs` |
 
-## 4. Environment variables (add in the same screen)
+## 4. Environment variables
 
-These are read at **runtime** on the server. The service-role key must **only** live
-here — never in the browser / `VITE_` vars.
+The frontend no longer talks to Supabase or sends emails — it calls the Express
+API in `backend/`, which owns the MySQL database, file uploads and SMTP.
+Database, JWT and SMTP settings belong to the **backend** Node.js app (see
+`backend/.env.example`), not to this one.
 
-| Variable | Value |
-|----------|-------|
-| `SUPABASE_URL` | `https://yxnvtaeqdcaldevqkduf.supabase.co` |
-| `SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_...` (same as in `.env`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Supabase → Project Settings → API Keys → secret key (`sb_secret_...`)** |
-
-`SUPABASE_SERVICE_ROLE_KEY` is the one that was missing and caused the form-submit
-error. Without it the "Become a Tutor" form and the tutor/admin pages will fail.
-
-### Email (SMTP) — optional but needed for the notification emails
-
-The app sends four emails via SMTP: a new-application alert to your team, a
-confirmation to the applicant on submit, and approval / rejection emails to the
-applicant. Until these are set, emails are silently **skipped** (the app still works).
-
-1. In cPanel → **Email Accounts**, create a mailbox, e.g. `careers@thebestscienceacademy.com`.
-2. Open its **Connect Devices** tab to read the SMTP host/port, then add these env vars:
+The only frontend setting is the API URL, and it is baked in **at build time**:
+set it in `frontend/.env` *before* running `npm run build`:
 
 | Variable | Value |
 |----------|-------|
-| `SMTP_HOST` | e.g. `mail.thebestscienceacademy.com` |
-| `SMTP_PORT` | `465` (SSL) or `587` (TLS) |
-| `SMTP_SECURE` | `true` for 465, `false` for 587 |
-| `SMTP_USER` | the full mailbox address (e.g. `careers@thebestscienceacademy.com`) |
-| `SMTP_PASS` | the mailbox password |
-| `EMAIL_FROM` | *(optional)* `The Best Science Academy <careers@thebestscienceacademy.com>` |
-| `ADMIN_NOTIFY_EMAIL` | where new-application alerts go (falls back to `EMAIL_FROM`) |
-| `CONTACT_NOTIFY_EMAIL` | where contact-form enquiries go, e.g. `info@thebestscienceacademy.com` (falls back to `ADMIN_NOTIFY_EMAIL`) |
-| `SMTP_TLS_REJECT_UNAUTHORIZED` | set to `false` if you get a *"Hostname/IP does not match certificate"* error (common on shared cPanel/Namecheap mail — the cert is for `*.web-hosting.com`, not your domain) |
+| `VITE_API_URL` | the public URL of the backend API, e.g. `https://api.thebestscienceacademy.com` |
 
-3. **Deliverability:** in cPanel → **Email Deliverability**, click **Repair** on your
-   domain so SPF and DKIM are set — otherwise these emails may land in spam.
+Changing it later means rebuilding and re-uploading. Nothing needs to be added in
+this app's cPanel environment-variables screen.
 
-Restart the app after adding/changing any of these.
+The backend's `FRONTEND_URL` must be this site's URL (for CORS and the login
+cookie), and both sites must use HTTPS in production.
 
 ## 5. Start it
 
 Click **Run NPM Install** (harmless — no deps), then **Restart**. Visit your URL.
+Make sure the backend API is running too, or tutors and forms won't load.
 
 ## Updating after code changes
 

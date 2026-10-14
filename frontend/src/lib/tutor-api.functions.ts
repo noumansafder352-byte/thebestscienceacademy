@@ -164,7 +164,28 @@ export const getIsAdmin = async () => {
   return { isAdmin: me.isAdmin, userId: me.userId };
 };
 
-export const adminListApplications = () => api<TutorApplication[]>("/api/admin/applications");
+export type ApplicationStatus = TutorApplication["status"];
+
+export type ApplicationFilters = {
+  /** Part of the applicant's name. */
+  name?: string;
+  /** Exact subject, e.g. "Physics". */
+  subject?: string;
+  status?: ApplicationStatus;
+};
+
+/** Lists applications, newest first. All filters are optional. */
+export const adminListApplications = ({ data }: { data?: ApplicationFilters } = {}) => {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(data ?? {})) {
+    if (typeof value === "string" && value.trim()) params.set(key, value.trim());
+  }
+  const query = params.toString();
+  return api<TutorApplication[]>(`/api/admin/applications${query ? `?${query}` : ""}`);
+};
+
+/** Every subject used in any application, sorted A–Z (for the subject filter). */
+export const adminListApplicationSubjects = () => api<string[]>("/api/admin/applications/subjects");
 
 export const adminGetApplication = ({ data }: { data: { id: string } }) =>
   api<

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Phone,
   RotateCcw,
+  SearchX,
   Send,
   Trash2,
   X,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import {
   adminListApplications,
+  adminListApplicationSubjects,
   adminGetApplication,
   adminApproveApplication,
   adminRejectApplication,
@@ -29,12 +31,14 @@ import {
   adminDeleteApplication,
   adminUpdateApplicationNotes,
   REJECTION_REASON_OPTIONS,
+  type ApplicationStatus,
 } from "@/lib/tutor-api.functions";
 import { StatusBadge } from "./admin.index";
 import {
   AdminAvatar,
   AdminPageHeader,
   EmptyState,
+  SearchInput,
   StatTile,
   tableHeadRow,
   tableRow,
@@ -44,10 +48,52 @@ export const Route = createFileRoute("/admin/applications")({
   component: ApplicationsAdmin,
 });
 
+const STATUS_OPTIONS: { value: ApplicationStatus; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "interview", label: "Interview" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "removed", label: "Removed" },
+];
+
+const filterSelect =
+  "h-10 rounded-full border border-border bg-surface-2 px-4 text-sm outline-none transition-colors focus:border-primary focus:bg-surface";
+
 function ApplicationsAdmin() {
   const listFn = useServerFn(adminListApplications);
+  // All applications — used for the stat cards, which always show overall totals.
   const { data: apps } = useQuery({ queryKey: ["admin-applications"], queryFn: () => listFn() });
   const [openId, setOpenId] = useState<string | null>(null);
+
+  // Filters (applied by the API). The name search waits until typing pauses.
+  const [nameInput, setNameInput] = useState("");
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [status, setStatus] = useState<ApplicationStatus | "">("");
+  useEffect(() => {
+    const t = setTimeout(() => setName(nameInput.trim()), 300);
+    return () => clearTimeout(t);
+  }, [nameInput]);
+  const hasFilters = !!(name || subject || status);
+
+  const subjectsFn = useServerFn(adminListApplicationSubjects);
+  const { data: subjectOptions } = useQuery({
+    queryKey: ["admin-applications", "subjects"],
+    queryFn: () => subjectsFn(),
+  });
+  const filtered = useQuery({
+    queryKey: ["admin-applications", "filtered", { name, subject, status }],
+    queryFn: () => listFn({ data: { name, subject, status: status || undefined } }),
+    enabled: hasFilters,
+    placeholderData: keepPreviousData,
+  });
+  const rows = hasFilters ? filtered.data : apps;
+  const clearFilters = () => {
+    setNameInput("");
+    setName("");
+    setSubject("");
+    setStatus("");
+  };
 
   const counts = {
     pending: (apps ?? []).filter((a: any) => a.status === "pending").length,
@@ -96,7 +142,56 @@ function ApplicationsAdmin() {
       </div>
 
       <div className="card-surface p-5">
-        <div className="overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-3">
+          <SearchInput
+            value={nameInput}
+            onChange={setNameInput}
+            placeholder="Search by name…"
+            className="w-full sm:w-64"
+          />
+          <select
+            aria-label="Filter by subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className={filterSelect}
+          >
+            <option value="">All subjects</option>
+            {(subjectOptions ?? []).map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Filter by status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as ApplicationStatus | "")}
+            className={filterSelect}
+          >
+            <option value="">All statuses</option>
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1 rounded-full px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:text-ink"
+            >
+              <X className="h-3.5 w-3.5" /> Clear filters
+            </button>
+          )}
+          {rows && (
+            <span className="ml-auto text-xs text-muted-foreground">
+              {hasFilters
+                ? `${rows.length} of ${apps?.length ?? rows.length} applications${filtered.isFetching ? " · updating…" : ""}`
+                : `${rows.length} applications`}
+            </span>
+          )}
+        </div>
+        <div className="mt-5 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className={tableHeadRow}>
@@ -109,7 +204,7 @@ function ApplicationsAdmin() {
               </tr>
             </thead>
             <tbody>
-              {(apps ?? []).map((a: any) => (
+              {(rows ?? []).map((a: any) => (
                 <tr key={a.id} className={tableRow}>
                   <td className="py-3 pr-3">
                     <div className="flex items-center gap-3">
@@ -144,14 +239,22 @@ function ApplicationsAdmin() {
                   </td>
                 </tr>
               ))}
-              {apps && apps.length === 0 && (
+              {rows && rows.length === 0 && (
                 <tr>
                   <td colSpan={6}>
-                    <EmptyState
-                      icon={Inbox}
-                      title="No applications yet"
-                      hint="New tutor applications will show up here."
-                    />
+                    {hasFilters ? (
+                      <EmptyState
+                        icon={SearchX}
+                        title="No matching applications"
+                        hint="Try a different name, subject or status."
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={Inbox}
+                        title="No applications yet"
+                        hint="New tutor applications will show up here."
+                      />
+                    )}
                   </td>
                 </tr>
               )}

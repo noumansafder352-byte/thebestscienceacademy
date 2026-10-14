@@ -35,10 +35,54 @@ async function findOne<T = any>(sql: string, params: unknown[]): Promise<T | nul
  *  APPLICATIONS
  * ================================================================ */
 
-/** adminListApplications — GET /api/admin/applications */
-adminRouter.get("/applications", async (_req, res) => {
-  const [rows] = (await db.query("SELECT * FROM tutor_applications ORDER BY created_at DESC")) as any;
+const APPLICATION_STATUSES = ["pending", "interview", "approved", "rejected", "removed"] as const;
+
+const applicationFilters = z.object({
+  /** Part of the applicant's name, case-insensitive. */
+  name: z.string().trim().max(120).optional(),
+  /** One subject, matched exactly against the applicant's subject list. */
+  subject: z.string().trim().max(200).optional(),
+  status: z.enum(APPLICATION_STATUSES).optional(),
+});
+
+/** Escape % and _ so user input is matched literally inside LIKE. */
+const likeContains = (s: string) => `%${s.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+
+/**
+ * adminListApplications — GET /api/admin/applications?name=&subject=&status=
+ * All filters are optional and combine with AND; no filters returns everything.
+ */
+adminRouter.get("/applications", async (req, res) => {
+  const { name, subject, status } = parseInput(applicationFilters, req.query);
+  const where: string[] = [];
+  const params: unknown[] = [];
+  if (name) {
+    where.push("full_name LIKE ?");
+    params.push(likeContains(name));
+  }
+  if (subject) {
+    where.push("JSON_CONTAINS(subjects, JSON_QUOTE(?))");
+    params.push(subject);
+  }
+  if (status) {
+    where.push("status = ?");
+    params.push(status);
+  }
+  const [rows] = (await db.query(
+    `SELECT * FROM tutor_applications ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY created_at DESC`,
+    params,
+  )) as any;
   res.json(rows.map(withParsedJson));
+});
+
+/** Subjects that appear in any application, for the subject filter — GET /api/admin/applications/subjects */
+adminRouter.get("/applications/subjects", async (_req, res) => {
+  const [rows] = (await db.query("SELECT subjects FROM tutor_applications")) as any;
+  const subjects = new Set<string>();
+  for (const row of rows) {
+    for (const s of withParsedJson(row).subjects as string[]) if (s?.trim()) subjects.add(s.trim());
+  }
+  res.json([...subjects].sort((a, b) => a.localeCompare(b)));
 });
 
 /** adminGetApplication — GET /api/admin/applications/:id  (null when not found) */

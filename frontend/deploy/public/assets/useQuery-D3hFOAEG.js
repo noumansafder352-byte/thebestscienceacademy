@@ -1,1 +1,0 @@
-import{r as e,t}from"./useBaseQuery-c64Ij8R0.js";function n(n,r){return t(n,e,r)}export{n as t};

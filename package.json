@@ -1,0 +1,14 @@
+{
+  "name": "science-academy",
+  "private": true,
+  "description": "Runs the backend (Express + MySQL) and frontend (website) together from the root folder.",
+  "scripts": {
+    "dev": "concurrently --names api,web --prefix-colors blue,green \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "typecheck": "npm --prefix backend run typecheck && cd frontend && npx tsc --noEmit"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
